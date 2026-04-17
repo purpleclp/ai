@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>平生有李智能Ai - Final v4.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #00d2ff;
+            --bg: #050505;
+            --panel: rgba(20, 20, 20, 0.95);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff; /* 强制初始化为白字 */
+            --bubble-ai: rgba(255, 255, 255, 0.1);
+        }
+        body.light {
+            --bg: #f5f7fa;
+            --panel: rgba(255, 255, 255, 0.95);
+            --border: rgba(0, 0, 0, 0.05);
+            --text-main: #1a1a1a;
+            --bubble-ai: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body { 
+            height: 100%; width: 100%; overflow: hidden;
+            background: var(--bg); color: var(--text-main);
+            font-family: -apple-system, system-ui, sans-serif;
+            transition: background 0.3s;
+        }
+
+        body { display: flex; flex-direction: column; }
+
+        /* 顶部跑马灯：固定高度 */
+        .marquee-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 40px;
+            background: var(--panel); backdrop-filter: blur(20px);
+            z-index: 2000; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; overflow: hidden;
+        }
+        .marquee { white-space: nowrap; animation: marquee 30s linear infinite; }
+        .marquee a {
+            color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: bold;
+            padding: 4px 15px; background: rgba(128,128,128,0.2); border-radius: 20px; margin: 0 10px;
+        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Header：适配深浅色，强制文字可见 */
+        header {
+            margin-top: 40px; padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--panel); border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .logo-box h1 { font-size: 18px; font-weight: 800; color: var(--text-main) !important; }
+        .logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; }
+
+        /* 对话区：解锁滚动，增加内边距避免遮挡 */
+        #chat-scroller {
+            flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding: 20px; display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .msg-group { display: flex; flex-direction: column; max-width: 88%; animation: msgIn 0.3s ease; }
+        .msg-group.user { align-self: flex-end; }
+        .bubble { 
+            padding: 12px 16px; border-radius: 20px; line-height: 1.6; font-size: 15px; 
+            word-break: break-all; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .ai .bubble { background: var(--bubble-ai); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        .user .bubble { background: linear-gradient(135deg, #3a7bd5, #00d2ff); color: white; border-bottom-right-radius: 4px; }
+
+        /* 底部：iOS 安全区域适配 */
+        .footer-wrap {
+            padding: 10px 15px calc(15px + env(safe-area-inset-bottom));
+            background: var(--panel); border-top: 1px solid var(--border);
+        }
+        .input-box {
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 25px; padding: 5px 5px 5px 15px;
+            display: flex; align-items: center;
+        }
+        #userInput {
+            flex: 1; border: none; outline: none; background: transparent; color: var(--text-main);
+            font-size: 16px; padding: 10px 0; resize: none; max-height: 120px;
+        }
+        .send-btn { width: 40px; height: 40px; background: var(--accent); border: none; border-radius: 50%; color: #000; display: flex; align-items: center; justify-content: center; }
+
+        /* 顶部控制按钮 */
+        .controls { display: flex; align-items: center; gap: 15px; }
+        .switch-fader { width: 36px; height: 18px; background: #444; border-radius: 10px; position: relative; cursor: pointer; }
+        .switch-fader.on { background: var(--accent); }
+        .fader-handle { width: 22px; height: 22px; background: #fff; border-radius: 50%; position: absolute; top: -2px; left: -2px; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .switch-fader.on .fader-handle { left: 16px; }
+
+        @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="dark">
+
+    <div class="marquee-container">
+        <div class="marquee">
+            <a href="https://bbbboo.klyfunny.org/#/register?code=Vdhz5euc" target="_blank">🔥 最低月付2元1000G机场推荐 / 解锁奈飞.TikTok.Gemini / 不限速不限设备不限地区</a>
+            <a href="https://bbbboo.klyfunny.org/#/register?code=Vdhz5euc" target="_blank">🔥 最低月付2元1000G机场推荐 / 解锁奈飞.TikTok.Gemini / 不限速不限设备不限地区</a>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-box">
+            <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
+            <h1 id="siteName">崔大智能Ai</h1>
+        </div>
+        <div class="controls">
+            <i id="themeToggle" class="fa-solid fa-moon" style="cursor:pointer; font-size: 20px;"></i>
+            <div class="switch-fader" id="musicBtn"><div class="fader-handle"><i class="fa-solid fa-play"></i></div></div>
+        </div>
+    </header>
+
+    <div id="chat-scroller">
+        <div class="msg-group ai">
+            <div class="bubble"> 基于讯飞星火Lite1.5，免费不限量且不需要key，来自崔大全力打造的公益</div>
+        </div>
+    </div>
+
+    <div class="footer-wrap">
+        <div class="input-box">
+            <textarea id="userInput" placeholder="输入指令..." rows="1"></textarea>
+            <button class="send-btn" id="sendAction"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <audio id="bgm" loop src="https://mpimg.cn/view.php/50bc58b359b1b4e8c03348e8641dd955.mp3"></audio>
+
+<script>
+    const API_URL = 'https://api.pearktrue.cn/api/xfai/';
+    const scroller = document.getElementById('chat-scroller');
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendAction');
+    const audio = document.getElementById('bgm');
+
+    // 模式切换
+    document.getElementById('themeToggle').onclick = function() {
+        document.body.classList.toggle('light');
+        this.className = document.body.classList.contains('light') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    };
+
+    // 音乐开关
+    const musicBtn = document.getElementById('musicBtn');
+    musicBtn.onclick = function() {
+        if(audio.paused) {
+            audio.play(); this.classList.add('on');
+            this.querySelector('.fader-handle').innerHTML = '<i class="fa-solid fa-pause"></i>';
+        } else {
+            audio.pause(); this.classList.remove('on');
+            this.querySelector('.fader-handle').innerHTML = '<i class="fa-solid fa-play"></i>';
+        }
+    };
+
+    function addMsg(text, isUser) {
+        const group = document.createElement('div');
+        group.className = `msg-group ${isUser ? 'user' : 'ai'}`;
+        group.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}</div>`;
+        scroller.appendChild(group);
+        scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' });
+    }
+
+    async function send() {
+        const val = input.value.trim();
+        if(!val) return;
+        input.value = ''; input.style.height = 'auto';
+        addMsg(val, true);
+
+        const loading = document.createElement('div');
+        loading.className = 'msg-group ai';
+        loading.innerHTML = '<div class="bubble">...</div>';
+        scroller.appendChild(loading);
+        scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' });
+
+        try {
+            const res = await fetch(`${API_URL}?message=${encodeURIComponent(val)}`);
+            const data = await res.json();
+            loading.remove();
+            
+            // 核心修复：精准抓取 answer，不再显示“获取成功”
+            let realAns = data.answer || (data.data && data.data.answer) || data.msg || "系统繁忙";
+            addMsg(realAns, false);
+        } catch(e) { 
+            loading.remove(); 
+            addMsg("连接异常，请检查网络", false); 
+        }
+    }
+
+    sendBtn.onclick = send;
+    input.onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+    input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+</script>
+</body>
+</html>
